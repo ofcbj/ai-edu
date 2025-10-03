@@ -1,2 +1,9 @@
 .ipynb_checkpoints/
 env_edu
+rent/tokyo_rent_data_v2.csv
+rent/*.png
+rent/*.pkl
+rent/*.pth
+rent/*.txt
+best_rent_model.pkl
+model_comparison_results.png
