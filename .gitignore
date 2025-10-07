@@ -5,3 +5,7 @@ rent/tokyo_rent_data_v2.csv
 *.pkl
 *.pth
 *.txt
+*.pyc
+rent/FONT_FIX.md
+rent/test_font.py
+rent/FONT_FIX_FINAL.md
