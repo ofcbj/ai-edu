@@ -17,9 +17,9 @@ class RentPredictionNet(nn.Module):
         super(RentPredictionNet, self).__init__()
 
         # Embedding layers (learn ward characteristics)
-        self.ward_embedding = nn.Embedding(num_wards, embedding_dim)
-        self.structure_embedding = nn.Embedding(num_structures, embedding_dim // 2)
-        self.type_embedding = nn.Embedding(num_types, embedding_dim // 2)
+        self.ward_embedding     = nn.Embedding(num_wards, embedding_dim)
+        self.structure_embedding= nn.Embedding(num_structures, embedding_dim // 2)
+        self.type_embedding     = nn.Embedding(num_types, embedding_dim // 2)
 
         # Calculate input dimensions
         # 3 numeric features + ward embedding + structure embedding + type embedding + ward average price
@@ -57,9 +57,9 @@ class RentPredictionNet(nn.Module):
 
     def forward(self, ward_idx, structure_idx, type_idx, numeric_features, ward_avg_price):
         # Embeddings
-        ward_emb = self.ward_embedding(ward_idx)
-        structure_emb = self.structure_embedding(structure_idx)
-        type_emb = self.type_embedding(type_idx)
+        ward_emb        = self.ward_embedding(ward_idx)
+        structure_emb   = self.structure_embedding(structure_idx)
+        type_emb        = self.type_embedding(type_idx)
 
         # Concatenate all features
         features = torch.cat([
@@ -83,26 +83,26 @@ class RentPredictionNetWithAttention(nn.Module):
                  embedding_dim=32, hidden_dims=[512, 256, 128]):
         super(RentPredictionNetWithAttention, self).__init__()
 
-        self.num_wards = num_wards
-        self.embedding_dim = embedding_dim
-        self.hidden_dims = hidden_dims
+        self.num_wards      = num_wards
+        self.embedding_dim  = embedding_dim
+        self.hidden_dims    = hidden_dims
 
         # Embedding layers
-        self.ward_embedding = nn.Embedding(num_wards, embedding_dim)
-        self.structure_embedding = nn.Embedding(num_structures, embedding_dim // 2)
-        self.type_embedding = nn.Embedding(num_types, embedding_dim // 2)
+        self.ward_embedding     = nn.Embedding(num_wards, embedding_dim)
+        self.structure_embedding= nn.Embedding(num_structures, embedding_dim // 2)
+        self.type_embedding     = nn.Embedding(num_types, embedding_dim // 2)
 
         # Attention mechanism
         self.attention = nn.Sequential(
             nn.Linear(embedding_dim, embedding_dim // 2),
             nn.Tanh(),
             nn.Linear(embedding_dim // 2, 1),
-            nn.Softmax(dim=1)
+            nn.Sigmoid()
         )
 
         # Interaction layers
-        self.ward_room_interaction = nn.Linear(embedding_dim + 1, embedding_dim)
-        self.ward_station_interaction = nn.Linear(embedding_dim + 1, embedding_dim)
+        self.ward_room_interaction      = nn.Linear(embedding_dim + 1, embedding_dim)
+        self.ward_station_interaction   = nn.Linear(embedding_dim + 1, embedding_dim)
 
         # Input dimensions
         input_dim = 3 + embedding_dim * 3 + (embedding_dim // 2) * 2 + 1
@@ -142,20 +142,20 @@ class RentPredictionNetWithAttention(nn.Module):
 
     def forward(self, ward_idx, structure_idx, type_idx, numeric_features, ward_avg_price):
         # Generate embeddings
-        ward_emb = self.ward_embedding(ward_idx)
-        structure_emb = self.structure_embedding(structure_idx)
-        type_emb = self.type_embedding(type_idx)
+        ward_emb            = self.ward_embedding(ward_idx)
+        structure_emb       = self.structure_embedding(structure_idx)
+        type_emb            = self.type_embedding(type_idx)
 
         # Apply attention
-        attention_weights = self.attention(ward_emb)
-        ward_emb_attended = ward_emb * attention_weights
+        attention_weights   = self.attention(ward_emb)
+        ward_emb_attended   = ward_emb * attention_weights
 
         # Generate interaction features
-        room_size = numeric_features[:, 0:1]
-        station_dist = numeric_features[:, 1:2]
+        room_size           = numeric_features[:, 0:1]
+        station_dist        = numeric_features[:, 1:2]
 
-        ward_room_feat = self.ward_room_interaction(torch.cat([ward_emb, room_size], dim=1))
-        ward_station_feat = self.ward_station_interaction(torch.cat([ward_emb, station_dist], dim=1))
+        ward_room_feat      = self.ward_room_interaction(torch.cat([ward_emb, room_size], dim=1))
+        ward_station_feat   = self.ward_station_interaction(torch.cat([ward_emb, station_dist], dim=1))
 
         # Concatenate all features
         features = torch.cat([

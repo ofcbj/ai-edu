@@ -99,11 +99,11 @@ class DeepLearningRentPredictor:
             ward_avg_normalized = (ward_avg - self.global_mean_price) / self.global_std_price
 
             with torch.no_grad():
-                ward_idx = torch.LongTensor([ward_encoded]).to(self.device)
-                structure_idx = torch.LongTensor([structure_encoded]).to(self.device)
-                type_idx = torch.LongTensor([type_encoded]).to(self.device)
-                numeric_feat = torch.FloatTensor(numeric_features_scaled).to(self.device)
-                ward_avg_price = torch.FloatTensor([ward_avg_normalized]).to(self.device)
+                ward_idx        = torch.LongTensor([ward_encoded]).to(self.device)
+                structure_idx   = torch.LongTensor([structure_encoded]).to(self.device)
+                type_idx        = torch.LongTensor([type_encoded]).to(self.device)
+                numeric_feat    = torch.FloatTensor(numeric_features_scaled).to(self.device)
+                ward_avg_price  = torch.FloatTensor([ward_avg_normalized]).to(self.device)
 
                 result = self.model(ward_idx, structure_idx, type_idx, numeric_feat, ward_avg_price)
                 if isinstance(result, tuple):

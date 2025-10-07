@@ -42,11 +42,11 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100,
             batch_targets = batch_targets.to(device)
 
             # Feature separation
-            ward_idx = batch_features[:, 0].long()
-            structure_idx = batch_features[:, 1].long()
-            type_idx = batch_features[:, 2].long()
-            numeric_features = batch_features[:, 3:6]
-            ward_avg_price = batch_features[:, 6]
+            ward_idx        = batch_features[:, 0].long()
+            structure_idx   = batch_features[:, 1].long()
+            type_idx        = batch_features[:, 2].long()
+            numeric_features= batch_features[:, 3:6]
+            ward_avg_price  = batch_features[:, 6]
 
             optimizer.zero_grad()
             outputs = model(ward_idx, structure_idx, type_idx, numeric_features, ward_avg_price)
@@ -67,11 +67,11 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100,
                 batch_features = batch_features.to(device)
                 batch_targets = batch_targets.to(device)
 
-                ward_idx = batch_features[:, 0].long()
-                structure_idx = batch_features[:, 1].long()
-                type_idx = batch_features[:, 2].long()
-                numeric_features = batch_features[:, 3:6]
-                ward_avg_price = batch_features[:, 6]
+                ward_idx        = batch_features[:, 0].long()
+                structure_idx   = batch_features[:, 1].long()
+                type_idx        = batch_features[:, 2].long()
+                numeric_features= batch_features[:, 3:6]
+                ward_avg_price  = batch_features[:, 6]
 
                 outputs = model(ward_idx, structure_idx, type_idx, numeric_features, ward_avg_price)
                 if isinstance(outputs, tuple):
@@ -79,8 +79,8 @@ def train_model(model, train_loader, val_loader, device, num_epochs=100,
                 loss = criterion(outputs.squeeze(), batch_targets)
                 val_loss += loss.item()
 
-        avg_train_loss = train_loss / len(train_loader)
-        avg_val_loss = val_loss / len(val_loader)
+        avg_train_loss  = train_loss / len(train_loader)
+        avg_val_loss    = val_loss / len(val_loader)
         train_losses.append(avg_train_loss)
         val_losses.append(avg_val_loss)
 
